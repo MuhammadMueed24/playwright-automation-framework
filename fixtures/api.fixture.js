@@ -7,7 +7,12 @@ import { AuthService } from '../api/services/auth.service.js';
 import { ProductsService } from '../api/services/products.service.js';
 
 export const test = base.extend({
-  api: async (_fixtures, use) => {
+  api: async (
+    // Playwright requires object destructuring for fixture dependencies.
+    // eslint-disable-next-line no-empty-pattern
+    {},
+    use,
+  ) => {
     const requestContext = await playwrightRequest.newContext({
       baseURL: API_BASE_URL,
       timeout: API_TIMEOUT,
