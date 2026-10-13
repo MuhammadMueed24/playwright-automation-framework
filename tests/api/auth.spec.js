@@ -39,3 +39,21 @@ test('@api API-009 - Verify Login Using DELETE', async ({ api }) => {
   expect(body.responseCode).toBe(405);
   expect(body.message).toBe('This request method is not supported.');
 });
+
+test('@api API-010 - Verify Login with Invalid Credentials', async ({ api }) => {
+  const invalidCredentials = {
+    email: 'invalid.user.20261013@example.com',
+    password: 'InvalidPassword123!',
+  };
+
+  const response = await api.auth.verifyLogin(invalidCredentials);
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API-level error response.
+  expect(body.responseCode).toBe(404);
+  expect(body.message).toBe('User not found!');
+});
