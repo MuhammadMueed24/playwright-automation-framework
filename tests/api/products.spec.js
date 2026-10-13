@@ -74,3 +74,35 @@ test('@api API-004 - PUT to All Brands List', async ({ api }) => {
   expect(body.responseCode).toBe(405);
   expect(body.message).toBe('This request method is not supported.');
 });
+
+test('@api @smoke API-005 - Search Product', async ({ api }) => {
+  const searchTerm = 'little girls mr. panda shirt';
+
+  const response = await api.products.searchProducts(searchTerm);
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API response.
+  expect(body.responseCode).toBe(200);
+  expect(body.products).toBeInstanceOf(Array);
+  expect(body.products.length).toBeGreaterThan(0);
+
+  // Validate the structure of a returned product.
+  for (const product of body.products) {
+    expect(product).toEqual(
+      expect.objectContaining({
+        id: expect.any(Number),
+        name: expect.any(String),
+        price: expect.any(String),
+        brand: expect.any(String),
+        category: expect.any(Object),
+      }),
+    );
+
+    // Confirm each returned product matches the search term.
+    expect(product.name.toLowerCase()).toContain(searchTerm);
+  }
+});
