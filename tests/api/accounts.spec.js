@@ -2,11 +2,12 @@ import { expect, test } from '../../fixtures/api.fixture.js';
 
 test('@api @smoke API-011 - Create/Register User Account', async ({ api }) => {
   const uniqueId = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
+  const password = 'TestPassword123!';
 
   const accountDetails = {
     name: `Test User ${uniqueId}`,
     email: `test.user.${uniqueId}@example.com`,
-    password: 'TestPassword123!',
+    password,
     title: 'Mr',
     birth_date: '10',
     birth_month: '5',
@@ -30,9 +31,22 @@ test('@api @smoke API-011 - Create/Register User Account', async ({ api }) => {
 
   const body = await response.json();
 
-  // Validate the API-level success response.
+  // Preserve the original registration assertions.
   expect(body.responseCode).toBe(201);
   expect(body.message).toBe('User created!');
+
+  // Cleanup: delete the temporary account.
+  const deleteResponse = await api.accounts.deleteAccount({
+    email: accountDetails.email,
+    password,
+  });
+
+  expect(deleteResponse.status()).toBe(200);
+
+  const deleteBody = await deleteResponse.json();
+
+  expect(deleteBody.responseCode).toBe(200);
+  expect(deleteBody.message).toBe('Account deleted!');
 });
 
 test('@api API-012 - Delete User Account', async ({ api }) => {
