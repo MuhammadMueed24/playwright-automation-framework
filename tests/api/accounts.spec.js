@@ -24,29 +24,37 @@ test('@api @smoke API-011 - Create/Register User Account', async ({ api }) => {
     mobile_number: '1234567890',
   };
 
-  const response = await api.accounts.createAccount(accountDetails);
+  let accountCreated = false;
 
-  // Validate the actual HTTP status.
-  expect(response.status()).toBe(200);
+  try {
+    const response = await api.accounts.createAccount(accountDetails);
 
-  const body = await response.json();
+    // Validate the actual HTTP status.
+    expect(response.status()).toBe(200);
 
-  // Preserve the original registration assertions.
-  expect(body.responseCode).toBe(201);
-  expect(body.message).toBe('User created!');
+    const body = await response.json();
 
-  // Cleanup: delete the temporary account.
-  const deleteResponse = await api.accounts.deleteAccount({
-    email: accountDetails.email,
-    password,
-  });
+    // Validate account creation.
+    expect(body.responseCode).toBe(201);
+    expect(body.message).toBe('User created!');
 
-  expect(deleteResponse.status()).toBe(200);
+    accountCreated = true;
+  } finally {
+    // Cleanup: delete the account if creation succeeded.
+    if (accountCreated) {
+      const deleteResponse = await api.accounts.deleteAccount({
+        email: accountDetails.email,
+        password,
+      });
 
-  const deleteBody = await deleteResponse.json();
+      expect(deleteResponse.status()).toBe(200);
 
-  expect(deleteBody.responseCode).toBe(200);
-  expect(deleteBody.message).toBe('Account deleted!');
+      const deleteBody = await deleteResponse.json();
+
+      expect(deleteBody.responseCode).toBe(200);
+      expect(deleteBody.message).toBe('Account deleted!');
+    }
+  }
 });
 
 test('@api API-012 - Delete User Account', async ({ api }) => {
