@@ -1,0 +1,13 @@
+import { expect, test } from '../../fixtures/api.fixture.js';
+
+test('@api @smoke API-007 - Verify Login with Valid Credentials', async ({ api }) => {
+  const email = process.env.TEST_USER_EMAIL;
+  const password = process.env.TEST_USER_PASSWORD;
+
+  const response = await api.auth.verifyLogin({ email, password });
+  const body = await response.json();
+
+  // Validate the API response.
+  expect(body.responseCode).toBe(200);
+  expect(body.message).toBe('User exists!');
+});
