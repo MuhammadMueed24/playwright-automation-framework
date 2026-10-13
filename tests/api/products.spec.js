@@ -22,3 +22,17 @@ test('@api @smoke API-001 - Get All Products List', async ({ api }) => {
   );
   expect(firstProduct.name.length).toBeGreaterThan(0);
 });
+
+
+test('@api API-002 - POST to All Products List', async ({ api }) => {
+  const response = await api.products.postProductsList();
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API-level error response.
+  expect(body.responseCode).toBe(405);
+  expect(body.message).toBe('This request method is not supported.');
+});
