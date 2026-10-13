@@ -26,3 +26,16 @@ test('@api API-008 - Verify Login without Email', async ({ api }) => {
   expect(body.responseCode).toBe(400);
   expect(body.message).toBe('Bad request, email or password parameter is missing in POST request.');
 });
+
+test('@api API-009 - Verify Login Using DELETE', async ({ api }) => {
+  const response = await api.auth.deleteVerifyLogin();
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API-level error response.
+  expect(body.responseCode).toBe(405);
+  expect(body.message).toBe('This request method is not supported.');
+});
