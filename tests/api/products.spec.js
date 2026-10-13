@@ -106,3 +106,16 @@ test('@api @smoke API-005 - Search Product', async ({ api }) => {
     expect(product.name.toLowerCase()).toContain(searchTerm);
   }
 });
+
+test('@api API-006 - Search without Product Parameter', async ({ api }) => {
+  const response = await api.products.searchProductsWithoutParameter();
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API-level error response.
+  expect(body.responseCode).toBe(400);
+  expect(body.message).toBe('Bad request, search_product parameter is missing in POST request.');
+});
