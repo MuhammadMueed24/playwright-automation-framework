@@ -61,3 +61,16 @@ test('@api @smoke API-003 - Get All Brands List', async ({ api }) => {
 
   expect(firstBrand.brand.length).toBeGreaterThan(0);
 });
+
+test('@api API-004 - PUT to All Brands List', async ({ api }) => {
+  const response = await api.products.putBrandsList();
+
+  // Validate the actual HTTP status.
+  expect(response.status()).toBe(200);
+
+  const body = await response.json();
+
+  // Validate the API-level error response.
+  expect(body.responseCode).toBe(405);
+  expect(body.message).toBe('This request method is not supported.');
+});
